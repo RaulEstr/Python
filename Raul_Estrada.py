@@ -1,357 +1,321 @@
-import statistics
 import csv
+import re
 
-def calcular_operaciones(a: float, b: float) -> dict :
+def calular_descuento(precio: float, porc: float) -> dict:
     """
-    Funcion que recibe dos numeros y calcula su suma, resta, multipliacion y division
-    
+    Funcion que recibe un precio y un descuento (entre 0 y 100) y devuelve un diccionario
+    con el valor descontado y el precio final
     Args:
-        a (float): primer numero
-        b (float): segundo numero
+        precio (float): precio inicial
+        porc (float): porcentaje descontado
+
     Returns:
-        diccionario (dict): {
-            "suma": (a + b), 
-            "resta": (a - b), 
-            "multiplicacion": (a * b), 
-            "division": "Error" | (a / b)}
+        dict: diccionario con dos claves, descuento y precio_final y sus respectivos valores
     """
     dicc = {}
-    dicc["suma"] = a + b
-    dicc["resta"] = a - b
-    dicc["multiplicacion"] = a * b
-    dicc["potencia"] = a ** b
-    if b == 0:
-        dicc["division"] = "Error"
-    else:
-        dicc["division"] = a / b
-
+    descuento = round(precio * porc / 100,2)
+    dicc["descuento"] = descuento
+    dicc["precio_final"] = round(precio - descuento,2)
     return dicc
 
-def analizar_texto(texto: str) -> dict:
+def clasificar_imc(peso: float, altura: float) -> dict:
     """
-    Funcion que recibe un texto y analiza su contenido
+    Funcion que recibe un peso y una altura y devuelve su IMC y su categoría
     Args:
-        texto (str): texto
+        peso (float): peso en kg (60, 70...)
+        altura (int): altura en metros (1.50, 1.70...)
+
     Returns:
-        diccionario (dict): {
-            "longitud": (int) longitud del texto,
-            "palabras": (int) cantidad de palabras,
-            "mayusculas": (str) texto en mayusculas,
-            "minusculas": (str) texto en minusculas,
-            "invertido": (str) texto invertido
-            }
+        dict: diccionario con dos claves, imc y categoria y sus respectivos valores
+    """
+
+    dicc = {}
+    imc = round(peso / (altura * altura),2)
+    dicc["imc"] = imc
+    if imc < 18.5:
+        dicc["categoria"] = "Bajo peso"
+    elif imc < 25:
+        dicc["categoria"] = "Normal"
+    elif imc < 30:
+        dicc["categoria"] = "Sobrepeso"
+    else:
+        dicc["categoria"] = "Obesidad"    
+    return dicc
+
+
+def es_bisiesto(anio: int) -> bool:
+    """
+    Funcion que recibe un año y devuelve si es bisiesto o no
+
+    Args:
+        anio (int): año
+
+    Returns:
+        bool: True si es bisiesto, false si no lo es
+    """
+
+    esBisiesto = False
+    if anio % 4 == 0:
+        esBisiesto = True
+        if anio % 100 == 0:
+            esBisiesto = False
+            if anio % 400 == 0:
+                esBisiesto = True
+
+    return esBisiesto
+
+def sumar_digitos(num: int) -> int:
+    """
+    Funcion que suma todos los digitos de un numero
+
+    Args:
+        num (int): numero a sumar sus digitos
+
+    Returns:
+        int: suma de todos los digitos
+    """
+    num = abs(num)
+    numStr = str(num)
+    numSumado = 0
+    for i in numStr:
+        numSumado += int(i)
+
+    return numSumado
+
+def contar_vocales(texto: str) -> dict:
+    """
+    Funcion que recibe un texto y devuelve un diccionario con la cantidad de cada vocal
+
+    Args:
+        texto (str): texto del que se van a contar las vocales
+
+    Returns:
+        dict: diccionario con claves (a,e,i,o,u) y valores de sus respectivas apariciones en el texto
     """
     dicc = {}
-
-    dicc["longitud"] = len(texto)
-    dicc["palabras"] = len(texto.split())
-    dicc["mayusculas"] = texto.upper()
-    dicc["minusculas"] = texto.lower()
-    inverso = ""
+    texto = texto.lower()
+    cantA = 0
+    cantE = 0
+    cantI = 0
+    cantO = 0
+    cantU = 0
     for i in texto:
-        inverso = i + inverso
-    dicc["invertido"] = inverso
+        if i == "a":
+            cantA += 1
+        if i == "e":
+            cantE += 1
+        if i == "i":
+            cantI += 1
+        if i == "o":
+            cantO += 1
+        if i == "u":
+            cantU += 1
+
+    dicc["a"] = cantA
+    dicc["e"] = cantE
+    dicc["i"] = cantI
+    dicc["o"] = cantO
+    dicc["u"] = cantU
 
     return dicc
 
-def estadisticas_lista(numeros: list) -> dict:
+def segundo_mayor(nums: list) -> int:
     """
-    Funcion que recibe una lista de números y saca sus estadísticas
+    Funcion que recibe una lista de numeros y devuelve el segundo mayor
+
     Args:
-        numeros (list): lista de números
+        nums (list): lista de numeros
+
     Returns:
-        diccionario (dict): {
-            "max": (int) número más alto,
-            "min": (int) número más bajo,
-            "promedio": (int) media de los números,
-            "pares": (list) lista de números pares
-            }
+        int | None: segundo numero mayor de la lista o None si no hay dos numeros distintos
     """
+
+    if len(nums) == 0:
+        return None
     
+    numMax = max(nums)
+    while nums.count(numMax) > 0:
+        nums.remove(numMax)
+
+    if len(nums) == 0:
+        return None
+    
+    return max(nums)
+
+def agrupar_por_inicial(palabras: list) -> dict:
+    """
+    Funcion que recibe una lista de palabras y devuelve un diccionario con las palabras
+    agrupadas por su inicial
+
+    Args:
+        palabras (list): lista de palabras
+
+    Returns:
+        dict: diccionario con clave de la primera letra de las palabras y como valor la
+            lista de las palabras que empiezan por esa inicial
+    """
     dicc = {}
 
-    if len(numeros) == 0:
-        dicc["max"] = None
-        dicc["min"] = None
-        dicc["promedio"] = 0
-        pares = []
-        dicc["pares"] = pares
-    else:
-        dicc["max"] = max(numeros)
-        dicc["min"] = min(numeros)
-        dicc["promedio"] = statistics.mean(numeros)
-        pares = []
-        for num in numeros:
-            if num % 2 == 0:
-                pares.append(num)
-        dicc["pares"] = pares
-
-    return dicc
-
-def generar_triangulo(n: int) -> list:
-    """
-    Funcion que recibe un numero y genera un patrón numérico triangular
-    Args:
-        n (int): número
-    Returns:
-        lista (list): lista con su patrón
-    """
-    lista = []
-    if n <= 0:
-        return lista
-
-    for x in range(n + 1):
-        elemento = ""
-        for y in range(x):
-            elemento += str(y + 1)
-        if elemento != "":
-            lista.append(elemento)
-
-    return lista
-
-def es_numero_feliz(n: int) -> bool:
-    """
-    Funcion que recibe un numero y devuelve si es feliz o no
-    Un número es feliz si, al reemplazarlo repetidamente por la suma de los cuadrados de sus dígitos, se llega a 1. Si entra en un ciclo que no incluye el 1, no es feliz.
-    Args:
-        n (int): número
-    Returns:
-        esFeliz (bool): "True" si es feliz, "False" si no es feliz
-    """
-
-    seguir = True
-    esFeliz = False
-    nstr = str(n)
-    numerosRepes = set()
-    while seguir:
-        if nstr in numerosRepes:
-            esFeliz = False
-            seguir = False
-            continue
-
-        suma = 0
-        for i in nstr:
-            num = int(i)
-            result = num * num
-            suma += result
-        
-        numerosRepes.add(nstr)
-        nstr = str(suma)
-        if suma == 1:
-            esFeliz = True
-            seguir = False
-
-    return esFeliz
-
-def contar_palabras(texto: str) -> dict:
-    """
-    Función que recibe un texto y cuenta cuantas veces aparece cada palabra
-    Args:
-        texto (str): texto
-    Returns:
-        dicconario (dict): diccionario palabra -> nº de veces
-    """
-    dicc = {}
-    texto = texto.lower()
-    palabras = texto.split()
     for palabra in palabras:
-        dicc[palabra] = texto.count(palabra)
+        inicial = palabra.lower()[0]
+        iniciales = dicc.keys()
+        if inicial not in iniciales:
+            dicc[inicial] = []
 
+        dicc[inicial].append(palabra)   
+        
     return dicc
 
-def es_palindromo(texto: str) -> bool:
+def leer_csv_ventas(ruta: str) -> dict:
     """
-    Función que recibe un texto e idica si es palíndromo
-    Args:
-        texto (str): texto
-    Returns:
-        esPalindromo (bool): True si es palíndromo, False si no es palíndromo
-    """
-    texto = texto.lower()
-    texto = texto.replace(" ", "")
-    iIni = 0
-    iFin = len(texto) - 1
-    esPalindromo = True
-
-    while esPalindromo and iIni < iFin:
-        if texto[iIni] != texto[iFin]:
-            esPalindromo = False
-        iIni += 1
-        iFin -= 1
-
-    return esPalindromo
-
-def leer_csv_alumnos(ruta: str) -> dict:
-    """
-    Función que recibe una ruta y devuelve estadísticas de alumnos
+    Funcion que recibe la ruta de un archivo csv de ventas y calcula estadisticas
 
     Args:
-        ruta (str): ruta del archivo
+        ruta (str): ruta del archivos csv
 
     Returns:
-        dicconario (dict): {
-            "total_alumnos": cantidad total de alumnos,
-            "nota_promedio": media de las notas de los alumnos}
-        diccionario (dict): {"error": Archivo no encontrado}
+        dict: diccionario con claves num_ventas, ingreso_total y producto_top y sus respectivos valores
     """
-    
     dicc = {}
 
     try:
         with open(ruta, "r", newline="", encoding="utf-8") as f:
-            alumnos = 0
-            notas = []
             lector = csv.reader(f)
+            contFilas = 0
+            sumaTotal = 0
+            ingresoMax = ["", 0]
             for fila in lector:
                 if any(fila):
-                    if fila[1].isnumeric():
-                        alumnos += 1
-                        notas.append(float(fila[1]))
+                    contFilas += 1
+                    ingreso = float(fila[1]) * float(fila[2])
+                    sumaTotal += ingreso
+                    if ingreso > ingresoMax[1]:
+                        ingresoMax = [fila[0], ingreso]
 
-        if alumnos == 0:
-            dicc["error"] = "No hay alumnos"
-        else:
-            dicc["total_alumnos"] = alumnos
-            dicc["nota_promedio"] = statistics.mean(notas)
+            dicc["num_ventas"] = contFilas
+            dicc["ingreso_total"] = round(sumaTotal, 2)
+            dicc["producto_top"] = ingresoMax[0]
     except FileNotFoundError:
         dicc["error"] = "Archivo no encontrado"
 
     return dicc
 
-def gestionar_empleados(empleados: list, operacion: str, id_empleado: int = None, subida: float = None, salario_minimo: float = None) -> dict | list:
+def cifrar_cesar(texto: str, desplazamiento: int) -> str:
     """
-    Funcion que recibe una lista de empleados y una operacion
-    Si la operacion es "subir_salario" también recibe un id_empleado y una subida
-    Si la operacion es "filtrar_por_salario" también recibe un salario_minimo
+    Funcion que recibe un texto y lo devuelve cifrado con el cifrado Cesar
 
     Args:
-        empleados (list): lista de empleados
-        operacion (str): nombre de la operacion
-        id_empleado (int, optional): id del empleado al que subir el salario. Defaults to None.
-        subida (float, optional): cantidad de salario que se va a sumar al empleado. Defaults to None.
-        salario_minimo (float, optional): cantidad de salario por el cual se va a filtrar. Defaults to None.
-
+        texto (str): texto original
+        desplazamiento (int): cantidad de desplazamiento
+        
     Returns:
-        dict | list: 
-        dict: Un empleado del que se ha realizado en formato diccionario {"id":, "nombre":, "salario":}
-        list: Lista de empleados con el salario mayor al salario_minimo en formato [{"id":, "nombre":, "salario":}, {...}]
+        str: texto cifrado
     """
-    
-    if operacion == "subir_salario":
-        for empleado in empleados:
-            if empleado["id"] == id_empleado:
-                empleado["salario"] = empleado["salario"] + subida
-                return empleado
-            return {"error": "El id_empleado no existe"}
+    lista = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","ñ","o","p","q","r","s","t","u","v","w","x","y","z"]
 
-    if operacion == "filtrar_por_salario":
-        empleadosFiltrados = []
-        for empleado in empleados:
-            if empleado["salario"] >= salario_minimo:
-                empleadosFiltrados.append(empleado)
-        return empleadosFiltrados
+    cifrado = ""
+    for letra in texto:
+        patron = r"[a-z|A-Z|ñ|Ñ]"
+        if re.search(patron, letra):
+            posNuevaLetra = lista.index(letra.lower()) + desplazamiento
+            if posNuevaLetra >= len(lista):
+                posNuevaLetra = posNuevaLetra % len(lista)
 
-    return []
-    
-def evaluar_tres_en_raya(tablero: list) -> str:
+            patronMayus = r"[A-Z|Ñ]"
+            if re.search(patronMayus, letra):
+                cifrado += lista[posNuevaLetra].upper()
+            else:
+                cifrado += lista[posNuevaLetra]   
+        else:
+            cifrado += letra
+
+    return cifrado
+
+def sumular_cajero(operaciones: list, saldo_inicial: float = 0) -> dict:
     """
-    Funcion que recibe un tablero (lista de 9) y devuelve el estado de la partida del 3 en raya
+    Funcion que recibe una lista de operaciones a realizar y un saldo inicial (por defecto 0), realiza las operaciones
+    y devuelve un diccionario con el saldo final, cantidad de operaciones correctas y cantida de operaciones rechazadas
+
     Args:
-        tablero (list): lista de 9 strings, "X", "O", " "
+        operaciones (list): lista de diccionario de operaciones
+        saldo_inicial (float, optional): saldo inicial del cajero. Defaults to 0
+
     Returns:
-        estado (str): "X" si ha ganado X, "O" si ha ganado O, "Empate" si no ha ganado ninguno, "En juego" si todavía hay espacios en blanco
+        dict: diccionario con claves saldo_final, operaciones_ok y operaciones_rechazadas y sus respectivos valores
     """
+    dicc = {}
+    saldo = saldo_inicial
+    operacionesOK = 0
+    operacionesNOT = 0
+    for operacion in operaciones:
+        if operacion["tipo"] == "ingreso":
+            saldo += operacion["cantidad"]
+            operacionesOK += 1
+        elif operacion["tipo"] == "retiro":
+            if saldo - operacion["cantidad"] < 0:
+                operacionesNOT += 1
+            else:
+                saldo -= operacion["cantidad"]
+                operacionesOK += 1
+        else:
+            operacionesNOT += 1
 
-    ganadoras = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
+    dicc["saldo_final"] = round(saldo, 2)
+    dicc["operaciones_ok"] = operacionesOK
+    dicc["operaciones_rechazadas"] = operacionesNOT
 
-    for posiciones in ganadoras:
-        if tablero[posiciones[0]] == "X" and tablero[posiciones[1]] == "X" and tablero[posiciones[2]] == "X":
-            return "X"
-        if tablero[posiciones[0]] == "O" and tablero[posiciones[1]] == "O" and tablero[posiciones[2]] == "O":
-            return "O"
-
-    for i in tablero:
-        if i == " ":
-            return "En juego"
-
-    return "Empate"
-
+    return dicc
 
 if __name__ == "__main__":
     # 1
     print("1----------------------------")
-    print(calcular_operaciones(10, 2))
-    print(calcular_operaciones(5, 0)['division'])
-    print()
+    print(calular_descuento(100, 20))
 
-    # 2
+    # 1
     print("2----------------------------")
-    print(analizar_texto("Python es genial"))
-    print()
+    print(clasificar_imc(70, 1.75))
 
-    # 3
     print("3----------------------------")
-    print(estadisticas_lista([7, 2, 9, 1, 5, 8, 3]))
-    print(estadisticas_lista([]))
-    print()
+    print(es_bisiesto(2024))
+    print(es_bisiesto(2023))
+    print(es_bisiesto(1900))
+    print(es_bisiesto(2000))
 
-    # 4
     print("4----------------------------")
-    print(generar_triangulo(4))
-    print()
+    print(sumar_digitos(123))
+    print(sumar_digitos(-45))
+    print(sumar_digitos(0)) 
 
-    # 5
     print("5----------------------------")
-    print(es_numero_feliz(19))
-    print(es_numero_feliz(4))
-    print(es_numero_feliz(7))
-    print()
+    print(contar_vocales("programacion"))
+    print(contar_vocales("murcielago"))
+    print(contar_vocales("cdfgbv"))
+    print(contar_vocales(""))
 
-    # 6
     print("6----------------------------")
-    print(contar_palabras("  "))
-    print(contar_palabras("hola HOLA mundo esto es es una frase MUNDO"))
-    print()
+    print(segundo_mayor([3,1,4,1,5,9,2,6]))
+    print(segundo_mayor([10,10,9]))
+    print(segundo_mayor([5,5,5]))
+    print(segundo_mayor([]))
+    print(segundo_mayor([1]))
 
-    # 7
     print("7----------------------------")
-    print(es_palindromo("Anita lava la tina"))  # True
-    print(es_palindromo("Hola"))
-    print(es_palindromo("aaaa"))
-    print()
+    print(agrupar_por_inicial(["casa", "coche", "perro", "gato"]))
+    print(agrupar_por_inicial(["Casa", "coche", "Perro", "gato"]))
 
-    # 8
     print("8----------------------------")
-    print(leer_csv_alumnos('alumnos.csv')) 
-    print(leer_csv_alumnos('archivo_inexistente.csv'))
-    print()
+    print(leer_csv_ventas("ventas.csv"))
 
-    # 9  
     print("9----------------------------")
-    empleados = [
-        {'id': 1, 'nombre': 'Ana', 'salario': 1900.0},
-        {'id': 2, 'nombre': 'Luis', 'salario': 1500.0}
-    ]
-    empleado = gestionar_empleados(empleados, "subir_salario", id_empleado=1, subida=300)
-    print(empleado["salario"])
-    aprobados = gestionar_empleados(empleados, "filtrar_por_salario", salario_minimo=2000)
-    print(len(aprobados))
-    print()
+    print(cifrar_cesar("abc", 3))
+    print(cifrar_cesar("HoLa", 3))
+    print(cifrar_cesar("abc", 29))
+    print(cifrar_cesar("xyz", 3))
+    print(cifrar_cesar("¡Me llamo Raul!", 5))
 
-    # 10
     print("10---------------------------")
-    print(evaluar_tres_en_raya(["X", "X", "X",
-                                " ", " ", " ",
-                                " ", " ", " "]))         
+    operaciones = [{"tipo": "ingreso", "cantidad": 100},
+                   {"tipo": "retiro", "cantidad": 40},
+                   {"tipo": "retiro", "cantidad": 80}]
+    print(sumular_cajero(operaciones))
 
-    print(evaluar_tres_en_raya(["O", "X", "X",
-                                "X", "O", " ",
-                                " ", " ", "O"]))     
-
-    print(evaluar_tres_en_raya(["X", "O", "X",
-                                "X", "O", "O",
-                                "O", "X", "X"]))  
-
-    print(evaluar_tres_en_raya(["X", " ", " ",
-                                " ", " ", "O",
-                                " ", " ", " "]))
