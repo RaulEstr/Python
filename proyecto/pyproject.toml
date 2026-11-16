@@ -1,0 +1,19 @@
+[project]
+name = "proyecto"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Raul", email = "raulestradawork@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "sqlalchemy>=2.1.8",
+]
+
+[project.scripts]
+proyecto = "proyecto:main"
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
